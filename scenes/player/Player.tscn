@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://b85hcj01tpqlp"]
+
+[ext_resource type="Script" uid="uid://owj0iq208t3x" path="res://scenes/player/player.gd" id="1_gfjak"]
+[ext_resource type="Texture2D" uid="uid://b3ejmq5sr0knn" path="res://assets/sprites/ChatGPT Image 18 dic 2025, 00_27_54.png" id="2_4kuee"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_524rm"]
+height = 48.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gfjak"]
+size = Vector2(40, 20)
+
+[node name="Player" type="CharacterBody2D"]
+collision_mask = 2
+script = ExtResource("1_gfjak")
+attack_duration = 0.1
+rhythm_window = 0.1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_524rm")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -24)
+scale = Vector2(0.052246097, 0.051254082)
+texture = ExtResource("2_4kuee")
+
+[node name="AttackHitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox"]
+position = Vector2(30, 0)
+shape = SubResource("RectangleShape2D_gfjak")

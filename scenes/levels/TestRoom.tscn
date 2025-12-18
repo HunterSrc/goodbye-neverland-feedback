@@ -1,0 +1,84 @@
+[gd_scene load_steps=13 format=3 uid="uid://qpdqju70meax"]
+
+[ext_resource type="PackedScene" uid="uid://b85hcj01tpqlp" path="res://scenes/player/Player.tscn" id="1_hvmtt"]
+[ext_resource type="Texture2D" uid="uid://crw7udrxejmn3" path="res://assets/sprites/Piattaforma di erba e terra pixelata.png" id="1_u0lmq"]
+[ext_resource type="Script" uid="uid://xgvfjdjw2plf" path="res://scenes/levels/target.gd" id="3_k2mrc"]
+[ext_resource type="Script" uid="uid://biky8w6yrcvbw" path="res://scenes/levels/platform.gd" id="4_m1ix8"]
+[ext_resource type="Script" uid="uid://b2g1wkw1ql6wd" path="res://scenes/levels/feedback_bar.gd" id="5_3kdk2"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hvmtt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u0lmq"]
+size = Vector2(1200, 40)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_k2mrc"]
+blend_mode = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k2mrc"]
+size = Vector2(40, 40)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m1ix8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3kdk2"]
+size = Vector2(200, 20)
+
+[sub_resource type="ImageTexture" id="ImageTexture_m1ix8"]
+
+[node name="TestRoom" type="Node2D"]
+position = Vector2(1, -7)
+
+[node name="Floor" type="StaticBody2D" parent="."]
+material = SubResource("CanvasItemMaterial_hvmtt")
+position = Vector2(640, 650)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("RectangleShape2D_u0lmq")
+
+[node name="Sprite2D" type="Sprite2D" parent="Floor"]
+position = Vector2(-2.0000076, -4)
+scale = Vector2(1.5859375, 0.13378906)
+texture = ExtResource("1_u0lmq")
+
+[node name="Player" parent="." instance=ExtResource("1_hvmtt")]
+position = Vector2(640, 500)
+
+[node name="Target" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 4
+script = ExtResource("3_k2mrc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Target"]
+modulate = Color(1, 0, 1, 1)
+self_modulate = Color(1, 0, 1, 1)
+material = SubResource("CanvasItemMaterial_k2mrc")
+position = Vector2(646, 580)
+shape = SubResource("RectangleShape2D_k2mrc")
+debug_color = Color(0.98879844, 0, 0.3031719, 0.41960785)
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Platform" type="StaticBody2D" parent="."]
+modulate = Color(0, 1, 1, 1)
+top_level = true
+physics_material_override = SubResource("PhysicsMaterial_m1ix8")
+script = ExtResource("4_m1ix8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
+position = Vector2(865, 515)
+shape = SubResource("RectangleShape2D_3kdk2")
+
+[node name="Sprite" type="Sprite2D" parent="Platform"]
+visible = false
+modulate = Color(0, 0, 0, 1)
+position = Vector2(-1, -7.6293945e-06)
+scale = Vector2(0.11621094, 0.111084)
+texture = SubResource("ImageTexture_m1ix8")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="FeedbackBar" type="ColorRect" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(1, 0, 0, 1)
+script = ExtResource("5_3kdk2")
