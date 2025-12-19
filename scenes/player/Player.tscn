@@ -17,6 +17,7 @@ jump_force = -430.0
 dash_duration = 0.3
 beat_interval = 0.1
 feedback_per_hit = 25.0
+facing_lock_extra = 0.2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("1s")

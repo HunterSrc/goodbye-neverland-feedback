@@ -4,7 +4,7 @@
 
 ## EPIC 0 — Setup & Base Project
 
-* [ ] Crea cartelle progetto standard (`scenes/levels`, `scenes/enemies`, `scripts/...`, `ui`, `assets/audio`, `assets/vfx`)
+* [X] Crea cartelle progetto standard (`scenes/levels`, `scenes/enemies`, `scripts/...`, `ui`, `assets/audio`, `assets/vfx`)
 * [X] Imposta Input Map: `move_left`, `move_right`, `jump`, `dash`, `attack`, `interact`
 * [X] Aggiungi scena `Main.tscn` che carica `Level_01` (entrypoint stabile)
 * [ ] Aggiungi `GameManager` autoload (scene flow + flags debug)

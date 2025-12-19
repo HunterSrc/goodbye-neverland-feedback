@@ -22,12 +22,7 @@ func _on_body_entered(body: Node) -> void:
 		return
 	if body is CharacterBody2D and body.name == "Player":
 		_triggered = true
-
 		if next_scene != null:
-			var main := get_tree().current_scene
-			if main and main.has_method("load_level"):
-				main.load_level(next_scene)
-			else:
-				get_tree().change_scene_to_packed(next_scene)
+			GameManager.load_level(next_scene)
 		else:
 			print("LEVEL COMPLETE (no next_scene set)")
