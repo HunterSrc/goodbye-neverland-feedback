@@ -40,7 +40,7 @@ size = Vector2(2600, 40)
 
 [node name="Player" parent="." instance=ExtResource("1")]
 position = Vector2(120, 520)
-jump_force = -550.0
+jump_force = -500.0
 
 [node name="Exit" type="Area2D" parent="."]
 position = Vector2(2200, 520)

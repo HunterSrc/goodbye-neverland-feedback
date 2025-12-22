@@ -3,7 +3,7 @@ extends CharacterBody2D
 signal hp_changed(new_hp: int, max_hp: int)
 
 @export var speed := 220.0
-@export var jump_force := -462.0  # Aumentato del 10% (da -420.0)
+@export var jump_force := -500.0
 @export var gravity := 1200.0
 
 # DASH (snappy)

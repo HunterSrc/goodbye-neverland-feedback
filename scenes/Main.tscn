@@ -1,10 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cr033xfitjxke"]
+[gd_scene load_steps=6 format=3 uid="uid://cr033xfitjxke"]
 
 [ext_resource type="Script" uid="uid://d1q1t2rpauws" path="res://scripts/main.gd" id="1_rvslj"]
 [ext_resource type="PackedScene" uid="uid://dp3dw0sku56tp" path="res://scenes/levels/Level_01.tscn" id="2_0bbpv"]
 [ext_resource type="AudioStream" uid="uid://d2sner1uu0rk4" path="res://assets/audio/woosh.mp3" id="3_0bbpv"]
-[ext_resource type="PackedScene" uid="uid://hpui_root" path="res://scenes/ui/UIRoot.tscn" id="4_uiroot"]
-[ext_resource type="PackedScene" uid="uid://lore_ui" path="res://scenes/ui/LoreUI.tscn" id="5_loreui"]
+[ext_resource type="PackedScene" path="res://scenes/ui/UIRoot.tscn" id="4_uiroot"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LoreUI.tscn" id="5_loreui"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_rvslj")

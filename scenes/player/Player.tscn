@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://ixgfdkb6b0ln"]
+[gd_scene load_steps=7 format=3 uid="uid://ixgfdkb6b0ln"]
 
 [ext_resource type="Script" uid="uid://bjdapic6oj5gj" path="res://scripts/player/player.gd" id="1"]
 [ext_resource type="Script" uid="uid://bgu0st4i5htpt" path="res://scripts/player/attack_hitbox.gd" id="2_4kuee"]
 [ext_resource type="Texture2D" uid="uid://b3ejmq5sr0knn" path="res://assets/sprites/ChatGPT Image 18 dic 2025, 00_27_54.png" id="2_gfjak"]
+[ext_resource type="AudioStream" uid="uid://djwtem38203bd" path="res://assets/audio/CuoriinaffittoGoodbyeNeverland.mp3" id="4_524rm"]
 
 [sub_resource type="CapsuleShape2D" id="1s"]
 height = 48.0
@@ -13,7 +14,7 @@ size = Vector2(40, 20)
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 2
 script = ExtResource("1")
-jump_force = -473.0
+jump_force = -500.0
 dash_duration = 0.3
 beat_interval = 0.1
 feedback_per_hit = 25.0
@@ -35,3 +36,8 @@ shape = SubResource("2s")
 position = Vector2(0, -8.000001)
 scale = Vector2(0.097168, 0.097168)
 texture = ExtResource("2_gfjak")
+
+[node name="MainSong" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_524rm")
+volume_db = -0.3
+autoplay = true
