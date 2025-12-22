@@ -1,0 +1,137 @@
+[gd_scene load_steps=4 format=3 uid="uid://hpui_root"]
+
+[ext_resource type="Script" path="res://scripts/ui/hp_ui.gd" id="1_hpui"]
+[ext_resource type="Script" path="res://scripts/ui/feedback_bar_ui.gd" id="2_feedback"]
+[ext_resource type="Script" path="res://scripts/ui/noise_counter.gd" id="3_noise"]
+
+[node name="UIRoot" type="CanvasLayer"]
+layer = 1
+
+[node name="DamageFlash" type="ColorRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 0, 0, 0.6)
+
+[node name="HPUI" type="Control" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -60.0
+offset_right = 200.0
+offset_bottom = -20.0
+grow_vertical = 0
+script = ExtResource("1_hpui")
+
+[node name="HeartsContainer" type="HBoxContainer" parent="HPUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FeedbackBar" type="Control" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 40.0
+grow_horizontal = 0
+script = ExtResource("2_feedback")
+
+[node name="Ticks" type="Control" parent="FeedbackBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BarBackground" type="ColorRect" parent="FeedbackBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.2, 0.2, 0.8)
+
+[node name="BarOutline" type="ColorRect" parent="FeedbackBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="BarFill" type="ColorRect" parent="FeedbackBar"]
+layout_mode = 1
+anchors_preset = 4
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_right = 0.0
+grow_vertical = 2
+
+[node name="BeatIndicator" type="ColorRect" parent="FeedbackBar"]
+layout_mode = 1
+anchors_preset = 4
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 200.0
+offset_right = 204.0
+offset_top = -2.0
+offset_bottom = 22.0
+grow_vertical = 0
+
+[node name="ValueLabel" type="Label" parent="FeedbackBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "0 / 100"
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+
+[node name="NoiseCounter" type="Control" parent="."]
+anchors_preset = 1
+anchor_left = 0.0
+anchor_right = 0.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 44.0
+grow_horizontal = 0
+script = ExtResource("3_noise")
+
+[node name="Label" type="Label" parent="NoiseCounter"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 0
+vertical_alignment = 1
+text = "NOISE 0 / 0"
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://moving_platform"]
+
+[ext_resource type="Script" path="res://scripts/entities/MovingPlatform.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="shape_platform"]
+size = Vector2(120, 20)
+
+[node name="MovingPlatform" type="StaticBody2D"]
+script = ExtResource("1")
+collision_layer = 2
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("shape_platform")
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.7, 0.9, 1, 1)
+polygon = PackedVector2Array(-60, -10, 60, -10, 60, 10, -60, 10)

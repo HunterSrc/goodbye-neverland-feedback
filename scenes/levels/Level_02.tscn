@@ -1,19 +1,199 @@
-[gd_scene load_steps=3 format=3 uid="uid://mmemjf3m72pe"]
+[gd_scene load_steps=28 format=3 uid="uid://mmemjf3m72pe"]
 
 [ext_resource type="PackedScene" uid="uid://ixgfdkb6b0ln" path="res://scenes/player/Player.tscn" id="1_q13ec"]
+[ext_resource type="PackedScene" uid="uid://b7wohvpvp310i" path="res://scenes/entities/NoiseBlock.tscn" id="2_noise"]
+[ext_resource type="PackedScene" uid="uid://drone_patrol" path="res://scenes/entities/DronePatrol.tscn" id="3_drone"]
+[ext_resource type="PackedScene" uid="uid://lore_tablet" path="res://scenes/entities/LoreTablet.tscn" id="4_lore"]
+[ext_resource type="Script" uid="uid://coand336kmiha" path="res://scripts/levels/exit.gd" id="5_exit"]
+[ext_resource type="PackedScene" uid="uid://static_spitter" path="res://scenes/entities/StaticSpitter.tscn" id="6_spitter"]
+[ext_resource type="PackedScene" uid="uid://feedback_platform" path="res://scenes/entities/FeedbackPlatform.tscn" id="7_fbplat"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_left" path="res://scenes/entities/StaticSpitter_Left.tscn" id="8_spitter_left"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_up" path="res://scenes/entities/StaticSpitter_Up.tscn" id="9_spitter_up"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_down" path="res://scenes/entities/StaticSpitter_Down.tscn" id="10_spitter_down"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_diagup" path="res://scenes/entities/StaticSpitter_DiagUp.tscn" id="11_spitter_diagup"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_diagdown" path="res://scenes/entities/StaticSpitter_DiagDown.tscn" id="12_spitter_diagdown"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_cross" path="res://scenes/entities/StaticSpitter_Cross.tscn" id="13_spitter_cross"]
+[ext_resource type="PackedScene" uid="uid://static_spitter_spray" path="res://scenes/entities/StaticSpitter_Spray.tscn" id="14_spitter_spray"]
+[ext_resource type="PackedScene" uid="uid://chasing_hazard" path="res://scenes/entities/ChasingHazard.tscn" id="15_chaser"]
+[ext_resource type="Script" path="res://scripts/levels/kill_zone.gd" id="16_killzone"]
+[ext_resource type="PackedScene" uid="uid://level_03" path="res://scenes/levels/Level_03.tscn" id="17_level3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q13ec"]
-size = Vector2(1400, 60)
+size = Vector2(1000, 60)
+
+[sub_resource type="RectangleShape2D" id="PlatformShape1"]
+size = Vector2(180, 30)
+
+[sub_resource type="RectangleShape2D" id="PlatformShape2"]
+size = Vector2(200, 30)
+
+[sub_resource type="RectangleShape2D" id="PlatformShape3"]
+size = Vector2(160, 30)
+
+[sub_resource type="RectangleShape2D" id="ExitShape"]
+size = Vector2(120, 200)
+
+[sub_resource type="RectangleShape2D" id="FloorShape_Right"]
+size = Vector2(900, 60)
+
+[sub_resource type="RectangleShape2D" id="KillShape"]
+size = Vector2(3000, 40)
 
 [node name="Level_02" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_q13ec")]
+position = Vector2(120, 520)
 
-[node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(640, 650)
+[node name="RespawnPoint" type="Marker2D" parent="."]
+position = Vector2(119, 520)
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(520, 650)
 collision_layer = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor"]
 shape = SubResource("RectangleShape2D_q13ec")
 
-[node name="FloorAspect" type="Polygon2D" parent="Floor"]
+[node name="FloorAspect" type="Polygon2D" parent="Geometry/Floor"]
+
+[node name="Floor_Right" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1550, 650)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Right"]
+shape = SubResource("FloorShape_Right")
+
+[node name="Floor_Far" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2300, 650)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Far"]
+shape = SubResource("FloorShape_Right")
+
+[node name="Platform_1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(380, 550)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_1"]
+shape = SubResource("PlatformShape1")
+
+[node name="Platform_2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(750, 520)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_2"]
+shape = SubResource("PlatformShape2")
+
+[node name="Platform_3" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1100, 450)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_3"]
+shape = SubResource("PlatformShape3")
+
+[node name="Platform_4" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1500, 500)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_4"]
+shape = SubResource("PlatformShape2")
+
+[node name="Platform_5" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1750, 420)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_5"]
+shape = SubResource("PlatformShape1")
+
+[node name="Platform_6" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2050, 500)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_6"]
+shape = SubResource("PlatformShape2")
+
+[node name="NoiseBlocks" type="Node2D" parent="."]
+
+[node name="NoiseBlock_1" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(500, 520)
+feedback_required = 25.0
+
+[node name="NoiseBlock_2" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(750, 450)
+feedback_required = 30.0
+
+[node name="NoiseBlock_Gate" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(1050, 470)
+feedback_required = 40.0
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="DronePatrol_1" parent="Enemies" instance=ExtResource("3_drone")]
+position = Vector2(560, 440)
+patrol_distance = 180.0
+patrol_speed = 55.0
+
+[node name="DronePatrol_2" parent="Enemies" instance=ExtResource("3_drone")]
+position = Vector2(1120, 460)
+patrol_distance = 130.0
+patrol_speed = 60.0
+
+[node name="StaticSpitter_1" parent="Enemies" instance=ExtResource("6_spitter")]
+position = Vector2(900, 430)
+
+[node name="StaticSpitter_Spray" parent="Enemies" instance=ExtResource("14_spitter_spray")]
+position = Vector2(720, 470)
+fire_interval = 1.4
+
+[node name="StaticSpitter_Cross" parent="Enemies" instance=ExtResource("13_spitter_cross")]
+position = Vector2(1160, 360)
+fire_interval = 1.8
+
+[node name="StaticSpitter_Left" parent="Enemies" instance=ExtResource("8_spitter_left")]
+position = Vector2(420, 520)
+fire_interval = 1.6
+
+[node name="StaticSpitter_DiagDown" parent="Enemies" instance=ExtResource("12_spitter_diagdown")]
+position = Vector2(1040, 420)
+fire_interval = 1.5
+
+[node name="ChasingHazard_1" parent="Enemies" instance=ExtResource("15_chaser")]
+position = Vector2(540, 520)
+patrol_distance = 100.0
+detection_radius = 220.0
+
+[node name="LoreTablets" type="Node2D" parent="."]
+
+[node name="LoreTablet_1" parent="LoreTablets" instance=ExtResource("4_lore")]
+position = Vector2(350, 520)
+lore_text = "Il rumore cresce.\n\nOgni nota che cerco\ndi scrivere\nsi trasforma in static."
+debug_enabled = true
+
+[node name="LoreTablet_2" parent="LoreTablets" instance=ExtResource("4_lore")]
+position = Vector2(900, 390)
+lore_text = "Ma continuo a combattere.\n\nIl ritmo dentro di me\nnon si è ancora spento."
+debug_enabled = true
+
+[node name="FeedbackPlatform_1" parent="." instance=ExtResource("7_fbplat")]
+position = Vector2(820, 500)
+feedback_cost = 20.0
+active_time = 3.0
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(1500, 820)
+script = ExtResource("16_killzone")
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("KillShape")
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(2350, 470)
+script = ExtResource("5_exit")
+next_scene = ExtResource("17_level3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("ExitShape")

@@ -1,0 +1,96 @@
+[gd_scene load_steps=10 format=3 uid="uid://level_03"]
+
+[ext_resource type="PackedScene" uid="uid://ixgfdkb6b0ln" path="res://scenes/player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://b7wohvpvp310i" path="res://scenes/entities/NoiseBlock.tscn" id="2_noise"]
+[ext_resource type="PackedScene" uid="uid://falling_platform" path="res://scenes/entities/FallingPlatform.tscn" id="3_fall"]
+[ext_resource type="PackedScene" uid="uid://moving_platform" path="res://scenes/entities/MovingPlatform.tscn" id="4_move"]
+[ext_resource type="Script" uid="uid://coand336kmiha" path="res://scripts/levels/exit.gd" id="5_exit"]
+[ext_resource type="Script" path="res://scripts/levels/kill_zone.gd" id="6_killzone"]
+[ext_resource type="PackedScene" uid="uid://level_04" path="res://scenes/levels/Level_04.tscn" id="7_next"]
+
+[sub_resource type="RectangleShape2D" id="shape_floor"]
+size = Vector2(900, 60)
+
+[sub_resource type="RectangleShape2D" id="shape_kill"]
+size = Vector2(2000, 40)
+
+[sub_resource type="RectangleShape2D" id="shape_exit"]
+size = Vector2(120, 200)
+
+[node name="Level_03" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(100, 600)
+
+[node name="RespawnPoint" type="Marker2D" parent="."]
+position = Vector2(100, 600)
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(400, 700)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor"]
+shape = SubResource("shape_floor")
+
+[node name="FloorAspect" type="Polygon2D" parent="Geometry/Floor"]
+
+[node name="Platforms" type="Node2D" parent="Geometry"]
+
+[node name="Step1" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
+position = Vector2(320, 580)
+fall_delay = 1.5
+
+[node name="Step2" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
+position = Vector2(520, 520)
+fall_delay = 1.2
+
+[node name="Step3" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
+position = Vector2(700, 460)
+fall_delay = 1.0
+
+[node name="Step4_Move" parent="Geometry/Platforms" instance=ExtResource("4_move")]
+position = Vector2(900, 400)
+amplitude = Vector2(0, -80)
+speed = 120.0
+
+[node name="Step5" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
+position = Vector2(1100, 340)
+fall_delay = 0.9
+
+[node name="Step6_Move" parent="Geometry/Platforms" instance=ExtResource("4_move")]
+position = Vector2(1300, 280)
+amplitude = Vector2(120, 0)
+speed = 100.0
+
+[node name="Step7" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
+position = Vector2(1500, 220)
+fall_delay = 0.8
+
+[node name="NoiseBlocks" type="Node2D" parent="."]
+
+[node name="NoiseBlock_Top" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(1500, 180)
+feedback_required = 35.0
+
+[node name="NoiseBlock_Mid" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(1000, 500)
+feedback_required = 25.0
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(0, 820)
+script = ExtResource("6_killzone")
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("shape_kill")
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(1700, 200)
+script = ExtResource("5_exit")
+next_scene = ExtResource("7_next")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("shape_exit")

@@ -11,18 +11,23 @@ extends Node
 
 @export var titles: Dictionary = {
 	"res://scenes/levels/Level_01.tscn": "SOUNDCHECK",
-	"res://scenes/levels/Level_02.tscn": "STATIC ALLEY"
+	"res://scenes/levels/Level_02.tscn": "STATIC ALLEY",
+	"res://scenes/levels/Level_03.tscn": "ASCESA ROTTA",
+	"res://scenes/levels/Level_04.tscn": "ECO SOSPESO"
 }
 
 @export var subtitles: Dictionary = {
 	"res://scenes/levels/Level_01.tscn": "Dario — dopo l'espulsione",
-	"res://scenes/levels/Level_02.tscn": "Il rumore prova a divorare tutto"
+	"res://scenes/levels/Level_02.tscn": "Il rumore prova a divorare tutto",
+	"res://scenes/levels/Level_03.tscn": "Una salita tra eco e silenzio",
+	"res://scenes/levels/Level_04.tscn": "Il ritmo resiste nel vuoto"
 }
 
 # Screenshake tuning (base)
 @export var shake_decay: float = 18.0
 
 var current_level: Node = null
+var current_level_scene: PackedScene = null  # Memorizza la scena corrente per il reload
 
 @onready var fade_rect: ColorRect = $TransitionLayer/FadeRect
 @onready var title_label: Label = $TransitionLayer/TitleLabel
@@ -81,10 +86,13 @@ func shake(duration: float, strength: float) -> void:
 	_shake_strength = max(_shake_strength, strength)
 
 
-func load_level(scene: PackedScene, use_fade: bool = true) -> void:
+func load_level(scene: PackedScene, use_fade: bool = true, show_title: bool = true) -> void:
 	if scene == null:
 		push_error("[Main] load_level: scena null")
 		return
+
+	# Reset time_scale prima di qualsiasi transizione (importante per hitstop)
+	Engine.time_scale = 1.0
 
 	_set_player_enabled(false)
 
@@ -99,7 +107,14 @@ func load_level(scene: PackedScene, use_fade: bool = true) -> void:
 	current_level.name = "CurrentLevel"
 	add_child(current_level)
 
-	if show_title_card:
+	# Memorizza la scena per il reload
+	current_level_scene = scene
+	# Aggiorna path corrente anche in GameManager per debug/flag
+	if Engine.has_singleton("GameManager"):
+		GameManager.current_level_path = scene.resource_path
+
+	# Mostra title card solo se richiesto (per reload possiamo saltarlo)
+	if show_title_card and show_title:
 		await _show_title_for_scene(scene)
 
 	if use_fade:
@@ -147,6 +162,16 @@ func _show_title_for_scene(scene: PackedScene) -> void:
 	t2.tween_property(title_label, "modulate:a", 0.0, title_fade)
 	t2.tween_property(subtitle_label, "modulate:a", 0.0, title_fade)
 	await t2.finished
+
+
+func reload_current_level(use_fade: bool = true, show_title: bool = false) -> void:
+	"""Ricarica il livello corrente. Per default usa fade ma non mostra title card."""
+	if current_level_scene == null:
+		push_error("[Main] reload_current_level: nessun livello corrente memorizzato")
+		return
+
+	d("[Main] Reload livello: %s" % current_level_scene.resource_path)
+	await load_level(current_level_scene, use_fade, show_title)
 
 
 func _set_player_enabled(enabled: bool) -> void:

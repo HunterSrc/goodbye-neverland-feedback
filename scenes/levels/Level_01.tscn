@@ -1,15 +1,25 @@
-[gd_scene load_steps=11 format=3 uid="uid://dp3dw0sku56tp"]
+[gd_scene load_steps=18 format=3 uid="uid://dp3dw0sku56tp"]
 
 [ext_resource type="PackedScene" uid="uid://ixgfdkb6b0ln" path="res://scenes/player/Player.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://b7wohvpvp310i" path="res://scenes/entities/NoiseBlock.tscn" id="2"]
 [ext_resource type="Script" uid="uid://coand336kmiha" path="res://scripts/levels/exit.gd" id="3_wee7o"]
 [ext_resource type="PackedScene" uid="uid://mmemjf3m72pe" path="res://scenes/levels/Level_02.tscn" id="3_xokhc"]
+[ext_resource type="PackedScene" path="res://scenes/entities/Hazard.tscn" id="4_hazard"]
+[ext_resource type="PackedScene" path="res://scenes/entities/LoreTablet.tscn" id="5_lore"]
+[ext_resource type="PackedScene" path="res://scenes/entities/DronePatrol.tscn" id="6_drone"]
+[ext_resource type="Script" uid="uid://cw5hjcvvusic6" path="res://scripts/levels/kill_zone.gd" id="7_killzone"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xokhc"]
 size = Vector2(120, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_80q6e"]
-size = Vector2(1400, 60)
+size = Vector2(800, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor_mid"]
+size = Vector2(600, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor_right"]
+size = Vector2(600, 60)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wee7o"]
 size = Vector2(220, 30)
@@ -23,14 +33,17 @@ size = Vector2(30, 120)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_10xc4"]
 size = Vector2(30, 120)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kill"]
+size = Vector2(2600, 40)
+
 [node name="Level_01" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1")]
 position = Vector2(120, 520)
-jump_force = -500.0
+jump_force = -550.0
 
 [node name="Exit" type="Area2D" parent="."]
-position = Vector2(1180, 520)
+position = Vector2(2200, 520)
 script = ExtResource("3_wee7o")
 next_scene = ExtResource("3_xokhc")
 debug_enabled = true
@@ -40,28 +53,49 @@ shape = SubResource("RectangleShape2D_xokhc")
 
 [node name="Geometry" type="Node2D" parent="."]
 
-[node name="Floor" type="StaticBody2D" parent="Geometry"]
-position = Vector2(640, 650)
+[node name="Floor_Left" type="StaticBody2D" parent="Geometry"]
+position = Vector2(500, 650)
 collision_layer = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Left"]
 shape = SubResource("RectangleShape2D_80q6e")
 
-[node name="FloorAspect" type="Polygon2D" parent="Geometry/Floor"]
+[node name="FloorAspect" type="Polygon2D" parent="Geometry/Floor_Left"]
+
+[node name="Floor_Mid" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1450, 650)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Mid"]
+shape = SubResource("RectangleShape2D_floor_mid")
+
+[node name="Floor_Right" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2150, 650)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Right"]
+shape = SubResource("RectangleShape2D_floor_right")
 
 [node name="Platform_A" type="StaticBody2D" parent="Geometry"]
-position = Vector2(420, 520)
+position = Vector2(480, 520)
 collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_A"]
 shape = SubResource("RectangleShape2D_wee7o")
 
 [node name="Platform_B" type="StaticBody2D" parent="Geometry"]
-position = Vector2(900, 470)
+position = Vector2(1150, 500)
 collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_B"]
 shape = SubResource("RectangleShape2D_hhyrm")
+
+[node name="Platform_C" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1750, 480)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Platform_C"]
+shape = SubResource("RectangleShape2D_wee7o")
 
 [node name="Gate" type="Node2D" parent="."]
 
@@ -81,3 +115,41 @@ collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Gate/Pillar_R"]
 shape = SubResource("RectangleShape2D_10xc4")
+
+[node name="RespawnPoint" type="Marker2D" parent="."]
+position = Vector2(119, 520)
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Hazard_Test" parent="Hazards" instance=ExtResource("4_hazard")]
+position = Vector2(420, 490)
+debug_enabled = true
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(1200, 820)
+collision_layer = 0
+script = ExtResource("7_killzone")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("RectangleShape2D_kill")
+
+[node name="LoreTablets" type="Node2D" parent="."]
+
+[node name="LoreTablet_01" parent="LoreTablets" instance=ExtResource("5_lore")]
+position = Vector2(900, 440)
+lore_text = "Dopo l'espulsione
+
+Il silenzio è più forte
+di qualsiasi nota.
+
+Il rumore dentro
+non mi lascia scrivere."
+debug_enabled = true
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="DronePatrol_01" parent="Enemies" instance=ExtResource("6_drone")]
+position = Vector2(500, 450)
+patrol_speed = 60.0
+patrol_distance = 300.0
+debug_enabled = true

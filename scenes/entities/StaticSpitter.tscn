@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://static_spitter"]
+
+[ext_resource type="Script" path="res://scripts/entities/StaticSpitter.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://spit_projectile" path="res://scenes/entities/SpitProjectile.tscn" id="2"]
+
+[sub_resource type="CircleShape2D" id="1_shape"]
+radius = 10.0
+
+[node name="StaticSpitter" type="Node2D"]
+script = ExtResource("1")
+projectile_scene = ExtResource("2")
+
+[node name="HitArea" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 5
+monitoring = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
+shape = SubResource("1_shape")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.6, 0.4, 0.7, 1)
+polygon = PackedVector2Array(-12, -18, 12, -18, 12, 18, -12, 18)
+
+[node name="MuzzleFlash" type="Polygon2D" parent="."]
+visible = false
+color = Color(1, 1, 0.4, 0.8)
+polygon = PackedVector2Array(0, -6, 12, 0, 0, 6)
+
+[node name="Muzzle" type="Marker2D" parent="."]
+position = Vector2(18, 0)

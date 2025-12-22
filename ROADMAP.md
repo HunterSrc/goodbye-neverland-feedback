@@ -7,17 +7,17 @@
 * [X] Crea cartelle progetto standard (`scenes/levels`, `scenes/enemies`, `scripts/...`, `ui`, `assets/audio`, `assets/vfx`)
 * [X] Imposta Input Map: `move_left`, `move_right`, `jump`, `dash`, `attack`, `interact`
 * [X] Aggiungi scena `Main.tscn` che carica `Level_01` (entrypoint stabile)
-* [ ] Aggiungi `GameManager` autoload (scene flow + flags debug)
+* [X] Aggiungi `GameManager` autoload (scene flow + flags debug)
 
 ---
 
 ## EPIC 1 — Player Game Feel
 
-* [ ] Rifinitura dash: distanza percepita, cooldown, lockout (no jump durante dash)
-* [ ] Aggiungi “facing” (flip sprite / direzione) + posizione AttackHitbox che segue facing
-* [ ] Aggiungi hitstop micro (0.04–0.06s) su colpo riuscito
-* [ ] Aggiungi i-frames (invulnerabilità breve) dopo danno (0.5s)
-* [ ] Aggiungi HP Player (es. 3) + morte (respawn)
+* [X] Rifinitura dash: distanza percepita, cooldown, lockout (no jump durante dash)
+* [X] Aggiungi “facing” (flip sprite / direzione) + posizione AttackHitbox che segue facing
+* [X] Aggiungi hitstop micro (0.04–0.06s) su colpo riuscito
+* [X] Aggiungi i-frames (invulnerabilità breve) dopo danno (0.5s)
+* [X] Aggiungi HP Player (es. 3) + morte (respawn)
 * [ ] Aggiungi knockback semplice quando prendi danno
 * [ ] Aggiungi animazioni placeholder Player (idle/run/jump/dash/attack/hurt)
 

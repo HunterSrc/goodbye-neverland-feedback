@@ -1,0 +1,88 @@
+[gd_scene load_steps=8 format=3 uid="uid://level_04"]
+
+[ext_resource type="PackedScene" uid="uid://ixgfdkb6b0ln" path="res://scenes/player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://b7wohvpvp310i" path="res://scenes/entities/NoiseBlock.tscn" id="2_noise"]
+[ext_resource type="PackedScene" uid="uid://moving_platform" path="res://scenes/entities/MovingPlatform.tscn" id="3_move"]
+[ext_resource type="Script" uid="uid://coand336kmiha" path="res://scripts/levels/exit.gd" id="4_exit"]
+[ext_resource type="Script" path="res://scripts/levels/kill_zone.gd" id="5_killzone"]
+
+[sub_resource type="RectangleShape2D" id="shape_floor"]
+size = Vector2(1200, 60)
+
+[sub_resource type="RectangleShape2D" id="shape_exit"]
+size = Vector2(120, 200)
+
+[sub_resource type="RectangleShape2D" id="shape_kill"]
+size = Vector2(2600, 40)
+
+[node name="Level_04" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(120, 520)
+
+[node name="RespawnPoint" type="Marker2D" parent="."]
+position = Vector2(120, 520)
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="Floor_Left" type="StaticBody2D" parent="Geometry"]
+position = Vector2(500, 700)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Left"]
+shape = SubResource("shape_floor")
+
+[node name="Floor_Right" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1500, 700)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor_Right"]
+shape = SubResource("shape_floor")
+
+[node name="Platforms" type="Node2D" parent="Geometry"]
+
+[node name="Mover1" parent="Geometry/Platforms" instance=ExtResource("3_move")]
+position = Vector2(600, 540)
+amplitude = Vector2(180, 0)
+speed = 110.0
+
+[node name="Mover2" parent="Geometry/Platforms" instance=ExtResource("3_move")]
+position = Vector2(900, 420)
+amplitude = Vector2(0, -140)
+speed = 90.0
+
+[node name="Mover3" parent="Geometry/Platforms" instance=ExtResource("3_move")]
+position = Vector2(1300, 500)
+amplitude = Vector2(200, 0)
+speed = 130.0
+
+[node name="Mover4" parent="Geometry/Platforms" instance=ExtResource("3_move")]
+position = Vector2(1700, 420)
+amplitude = Vector2(0, -120)
+speed = 100.0
+
+[node name="NoiseBlocks" type="Node2D" parent="."]
+
+[node name="NoiseBlock_Left" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(900, 360)
+feedback_required = 30.0
+
+[node name="NoiseBlock_Right" parent="NoiseBlocks" instance=ExtResource("2_noise")]
+position = Vector2(1700, 360)
+feedback_required = 35.0
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(0, 840)
+script = ExtResource("5_killzone")
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("shape_kill")
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(1900, 340)
+script = ExtResource("4_exit")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("shape_exit")

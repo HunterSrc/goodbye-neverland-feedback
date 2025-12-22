@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://drone_patrol"]
+
+[ext_resource type="Script" path="res://scripts/entities/DronePatrol.gd" id="1_drone"]
+
+[sub_resource type="RectangleShape2D" id="DroneBodyShape"]
+size = Vector2(32, 24)
+
+[sub_resource type="RectangleShape2D" id="HitAreaShape"]
+size = Vector2(40, 32)
+
+[node name="DronePatrol" type="CharacterBody2D"]
+script = ExtResource("1_drone")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("DroneBodyShape")
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.8, 0.2, 0.2, 1)
+polygon = PackedVector2Array(-16, -12, 16, -12, 16, 12, -16, 12)
+
+[node name="VisualOutline" type="Polygon2D" parent="."]
+color = Color(0.5, 0.1, 0.1, 1)
+polygon = PackedVector2Array(-16, -12, 16, -12, 16, 12, -16, 12)
+width = 2.0
+
+[node name="HitArea" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 5
+monitoring = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
+shape = SubResource("HitAreaShape")

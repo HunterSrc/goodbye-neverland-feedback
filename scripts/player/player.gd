@@ -1,7 +1,9 @@
 extends CharacterBody2D
 
+signal hp_changed(new_hp: int, max_hp: int)
+
 @export var speed := 220.0
-@export var jump_force := -420.0
+@export var jump_force := -462.0  # Aumentato del 10% (da -420.0)
 @export var gravity := 1200.0
 
 # DASH (snappy)
@@ -25,16 +27,23 @@ extends CharacterBody2D
 @export var facing_lock_extra: float = 0.06
 var facing_lock_timer: float = 0.0
 
-# --- I-FRAMES / DAMAGE ---
+# --- HP / DAMAGE / RESPAWN ---
 @export var max_hp: int = 3
 @export var i_frame_time: float = 0.5
 @export var blink_interval: float = 0.06
 @export var hurt_knockback: Vector2 = Vector2(280, -220)
-@export var respawn_position: Vector2 = Vector2(120, 520)
+@export var damage_shake_enabled: bool = true
+@export var damage_shake_duration: float = 0.10
+@export var damage_shake_strength: float = 4.0
+
+@export var respawn_delay: float = 0.6
+@export var respawn_fallback: Vector2 = Vector2(120, 520) # usato se manca RespawnPoint
 
 var hp: int = 3
 var invuln_timer: float = 0.0
 var _blink_running: bool = false
+var respawn_position: Vector2
+var _is_dead: bool = false
 
 @export var debug_enabled: bool = false
 
@@ -66,6 +75,15 @@ func _ready() -> void:
 	add_to_group("player")
 
 	hp = max_hp
+	_is_dead = false
+	hp_changed.emit(hp, max_hp)
+
+	# RespawnPoint dal livello (group "respawn")
+	var rp := get_tree().get_first_node_in_group("respawn") as Node2D
+	if rp:
+		respawn_position = rp.global_position
+	else:
+		respawn_position = respawn_fallback
 
 	# Hitbox: Area sempre monitoring, shape disabilitata finché non attacchi
 	$AttackHitbox.monitoring = true
@@ -74,7 +92,7 @@ func _ready() -> void:
 	# Posiziona hitbox iniziale in base al facing
 	_apply_visual_and_hitbox()
 
-	d("[Player] Ready HP=%d/%d" % [hp, max_hp])
+	d("[Player] Ready HP=%d/%d respawn=%s" % [hp, max_hp, str(respawn_position)])
 
 
 func _physics_process(delta: float) -> void:
@@ -98,6 +116,8 @@ func _physics_process(delta: float) -> void:
 	beat_timer += delta
 	if beat_timer >= beat_interval:
 		beat_timer = 0.0
+		# Metronomo tick (non invadente)
+		GameManager.play_beat_tick()
 		if debug_enabled:
 			d("[Player] BEAT tick")
 
@@ -107,14 +127,12 @@ func _physics_process(delta: float) -> void:
 
 	# --- DASH start (può partire anche in aria) ---
 	if Input.is_action_just_pressed("dash") and dash_cd <= 0.0 and not is_dashing:
-		# se sei in aria e hai già usato l'air dash, blocca
 		if not is_on_floor() and not can_air_dash:
 			d("[Player] DASH blocked (no air dash left)")
 		else:
 			var dir := Input.get_axis("move_left", "move_right")
 			if dir != 0.0:
 				dash_dir = dir
-				# aggiorna facing anche per dash, ma solo se non sei in lock
 				_try_update_facing_from_dir(dash_dir)
 
 			is_dashing = true
@@ -132,19 +150,14 @@ func _physics_process(delta: float) -> void:
 
 	# --- MOVIMENTO ORIZZONTALE ---
 	if is_dashing:
-		# forziamo solo X, NON tocchiamo Y (gravità resta attiva)
 		velocity.x = dash_dir * dash_speed
-
 		dash_timer -= delta
 		if dash_timer <= 0.0:
 			is_dashing = false
 			d("[Player] DASH end")
 	else:
 		var move_dir := Input.get_axis("move_left", "move_right")
-
-		# aggiorna facing SOLO se non in lock (attack lock / post-attack delay)
 		_try_update_facing_from_dir(move_dir)
-
 		velocity.x = move_dir * speed
 
 	# --- JUMP (lockout: niente jump durante dash) ---
@@ -155,11 +168,7 @@ func _physics_process(delta: float) -> void:
 	# --- ATTACK (hitbox via shape enable/disable) ---
 	if Input.is_action_just_pressed("attack") and not is_attacking:
 		is_attacking = true
-
-		# lock facing per tutta la durata dell'attacco + extra
 		facing_lock_timer = attack_duration + facing_lock_extra
-
-		# assicura che la hitbox sia “davanti” al facing corrente
 		_apply_visual_and_hitbox()
 
 		$AttackHitbox/CollisionShape2D.disabled = false
@@ -169,7 +178,9 @@ func _physics_process(delta: float) -> void:
 
 		if on_beat:
 			feedback = min(feedback + feedback_per_hit, feedback_max)
-			d("[Player] FEEDBACK +%.2f => %.2f/%.2f" % [feedback_per_hit, feedback, feedback_max])
+			GameManager.play_hit_on_beat()
+		else:
+			GameManager.play_miss()
 
 		await get_tree().create_timer(attack_duration).timeout
 		$AttackHitbox/CollisionShape2D.disabled = true
@@ -180,7 +191,6 @@ func _physics_process(delta: float) -> void:
 
 
 func _try_update_facing_from_dir(dir: float) -> void:
-	# se stai attaccando o sei nel delay post-attacco, NON cambiare facing
 	if is_attacking or facing_lock_timer > 0.0:
 		return
 
@@ -196,13 +206,11 @@ func _try_update_facing_from_dir(dir: float) -> void:
 
 
 func _apply_visual_and_hitbox() -> void:
-	# flip sprite
 	if sprite and sprite is Sprite2D:
 		(sprite as Sprite2D).flip_h = (facing == -1)
 	elif sprite and sprite is AnimatedSprite2D:
 		(sprite as AnimatedSprite2D).flip_h = (facing == -1)
 
-	# sposta hitbox davanti al player
 	if attack_hitbox_shape:
 		attack_hitbox_shape.position.x = hitbox_offset_x * float(facing)
 
@@ -215,18 +223,15 @@ func consume_feedback(amount: float) -> bool:
 	var ok := feedback >= amount
 	if ok:
 		feedback -= amount
-		d("[Player] consume_feedback %.2f OK -> %.2f" % [amount, feedback])
-	else:
-		d("[Player] consume_feedback %.2f FAIL (have %.2f)" % [amount, feedback])
 	return ok
 
 
 # -----------------------------
 # DAMAGE + I-FRAMES API
-# Chiamala dai nemici: player.take_damage(1, global_position)
 # -----------------------------
 func take_damage(amount: int, from_global_pos: Vector2 = Vector2.ZERO) -> void:
-	# i-frames attivi -> ignora
+	if _is_dead:
+		return
 	if invuln_timer > 0.0:
 		d("[Player] Damage ignored (i-frames)")
 		return
@@ -246,9 +251,21 @@ func take_damage(amount: int, from_global_pos: Vector2 = Vector2.ZERO) -> void:
 	velocity.y = hurt_knockback.y
 
 	_start_blink()
+	GameManager.play_damage()
+	if damage_shake_enabled:
+		GameManager.screenshake(damage_shake_duration, damage_shake_strength)
+	hp_changed.emit(hp, max_hp)
 
 	if hp <= 0:
 		_die()
+
+
+func kill() -> void:
+	# Usato per kill-zone (caduta)
+	if _is_dead:
+		return
+	hp = 0
+	_die()
 
 
 func _start_blink() -> void:
@@ -276,12 +293,39 @@ func _blink_loop() -> void:
 
 
 func _die() -> void:
-	d("[Player] DEAD -> respawn")
-	global_position = respawn_position
+	if _is_dead:
+		return
+	_is_dead = true
+	d("[Player] DEAD -> reload level")
+
+	# Micro polish (hitstop e screenshake)
+	if Engine.has_singleton("GameManager"):
+		GameManager.hitstop(0.06, 0.05)
+		GameManager.screenshake(0.12, 10.0)
+
+	# Disabilita input/physics immediatamente
+	set_physics_process(false)
+	set_process_input(false)
+	set_process_unhandled_input(false)
+
+	# pulizia stato
+	is_dashing = false
+	is_attacking = false
+	dash_timer = 0.0
+	dash_cd = 0.0
+	# Usa set_deferred per evitare errori durante flush queries
+	$AttackHitbox/CollisionShape2D.set_deferred("disabled", true)
 	velocity = Vector2.ZERO
-	hp = max_hp
+	feedback = 0.0
 	invuln_timer = 0.0
-	# garantisce che torni visibile
-	if sprite and sprite is CanvasItem:
-		(sprite as CanvasItem).visible = true
-	_blink_running = false
+
+	# attesa breve prima del reload (ignora time_scale)
+	await get_tree().create_timer(respawn_delay, false, false, true).timeout
+
+	# Reload del livello (non respawn)
+	# In Godot 4, gli autoload sono accessibili direttamente come variabili globali
+	if GameManager:
+		# Il reload resetta tutto: HP, posizione, stato del livello
+		await GameManager.reload_level(true, false)  # fade sì, title no
+	else:
+		push_error("[Player] GameManager non trovato per reload!")
