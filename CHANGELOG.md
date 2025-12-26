@@ -25,3 +25,4 @@
 - Noise gating: GameManager tracks NoiseBlocks (total/destroyed), NoiseBlocks register/deregister on break; Exit requires all NoiseBlocks cleared. Added HUD NoiseCounter showing destroyed/total.
 - Added Level_03 (vertical climb with falling/moving platforms, NoiseBlocks, kill zone, exit to Level_04) and Level_04 (moving platforms, NoiseBlocks, kill zone); Level_02 now chains to Level_03. Updated title/subtitle cards for Levels 3–4 to push the lore.
 - Added main menu scene (`scenes/Menu.tscn`) with selectable “Nuova avventura” (starts Main) and “Carica” (prints placeholder); supports mouse/keyboard/tap.
+- Set player jump force to -500 across scripts and scenes; Level_02 now exits to Level_03; fixed spitter sub-resources; menu set as startup scene.

@@ -5,6 +5,8 @@ extends Node
 
 @export var fade_time: float = 0.30
 
+@export var camera_follow_offset: Vector2 = Vector2(0, -180)
+
 @export var show_title_card: bool = true
 @export var title_hold: float = 0.70
 @export var title_fade: float = 0.20
@@ -33,12 +35,14 @@ var current_level_scene: PackedScene = null  # Memorizza la scena corrente per i
 @onready var title_label: Label = $TransitionLayer/TitleLabel
 @onready var subtitle_label: Label = $TransitionLayer/SubtitleLabel
 @onready var sfx_player: AudioStreamPlayer2D = $TransitionLayer/SfxPlayer
+@onready var flash_rect: ColorRect = $TransitionLayer/FlashRect
 @onready var cam: Camera2D = $Camera2D
 
 # Shake state
 var _shake_time: float = 0.0
 var _shake_strength: float = 0.0
 var _cam_base_offset: Vector2 = Vector2.ZERO
+var _flash_tween: Tween
 
 
 func d(msg: String) -> void:
@@ -56,6 +60,8 @@ func _ready() -> void:
 	fade_rect.modulate.a = 1.0
 	title_label.modulate.a = 0.0
 	subtitle_label.modulate.a = 0.0
+	if flash_rect:
+		flash_rect.modulate.a = 0.0
 
 	await load_level(first_level, false)
 	await _fade_to(0.0)
@@ -65,7 +71,7 @@ func _process(delta: float) -> void:
 	# Camera follow Player (semplice e stabile)
 	var p := GameManager.get_player()
 	if p and p is Node2D:
-		cam.global_position = (p as Node2D).global_position
+		cam.global_position = (p as Node2D).global_position + camera_follow_offset
 
 	# Screenshake
 	if _shake_time > 0.0:
@@ -110,8 +116,16 @@ func load_level(scene: PackedScene, use_fade: bool = true, show_title: bool = tr
 	# Memorizza la scena per il reload
 	current_level_scene = scene
 	# Aggiorna path corrente anche in GameManager per debug/flag
+	var gm
 	if Engine.has_singleton("GameManager"):
-		GameManager.current_level_path = scene.resource_path
+		gm = GameManager
+	else:
+		gm = get_tree().root.get_node_or_null("GameManager")
+	if gm:
+		gm.current_level_path = scene.resource_path
+		# Aspetta un frame per permettere ai NoiseBlock di entrare in scena e aggiungersi al gruppo
+		await get_tree().process_frame
+		gm.scan_noise_blocks()
 
 	# Mostra title card solo se richiesto (per reload possiamo saltarlo)
 	if show_title_card and show_title:
@@ -128,6 +142,21 @@ func _fade_to(target_alpha: float) -> void:
 	var t := get_tree().create_tween()
 	t.tween_property(fade_rect, "modulate:a", target_alpha, fade_time)
 	await t.finished
+
+
+func flash(color: Color, duration: float) -> void:
+	if not flash_rect:
+		return
+
+	if _flash_tween and _flash_tween.is_running():
+		_flash_tween.kill()
+
+	flash_rect.color = color
+	flash_rect.modulate.a = color.a
+
+	_flash_tween = get_tree().create_tween()
+	_flash_tween.tween_property(flash_rect, "modulate:a", 0.0, duration)
+	await _flash_tween.finished
 
 
 func _show_title_for_scene(scene: PackedScene) -> void:

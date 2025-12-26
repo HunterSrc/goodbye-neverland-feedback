@@ -5,6 +5,7 @@ extends StaticBody2D
 
 var player: CharacterBody2D
 var is_breaking: bool = false
+var gm
 
 
 func d(msg: String) -> void:
@@ -17,8 +18,9 @@ func _ready() -> void:
 	is_breaking = false
 	
 	add_to_group("noise_block")
-	if Engine.has_singleton("GameManager"):
-		GameManager.register_noise_block(self)
+	gm = _get_gm()
+	if gm and gm.has_method("register_noise_block"):
+		gm.register_noise_block(self)
 	
 	# Trova il player
 	player = get_tree().get_first_node_in_group("player") as CharacterBody2D
@@ -72,6 +74,7 @@ func _on_hit_area_entered(area: Area2D) -> void:
 	# --- HIT CONFIRMED -> micro polish ---
 	GameManager.hitstop()
 	GameManager.screenshake()
+	GameManager.flash_hit()
 	GameManager.play_hit_on_beat()  # SFX hit
 
 	# Feedback visivo immediato
@@ -117,9 +120,16 @@ func break_block() -> void:
 		d("[NoiseBlock] WARNING: manca animazione 'break' (elimino subito)")
 
 	d("[NoiseBlock] queue_free()")
-	if Engine.has_singleton("GameManager"):
-		GameManager.noise_block_destroyed()
+	gm = _get_gm()
+	if gm and gm.has_method("noise_block_destroyed"):
+		gm.noise_block_destroyed()
 	queue_free()
+
+
+func _get_gm():
+	if Engine.has_singleton("GameManager"):
+		return GameManager
+	return get_tree().root.get_node_or_null("GameManager")
 
 
 func _spawn_hit_particles() -> void:

@@ -1,18 +1,21 @@
-[gd_scene load_steps=10 format=3 uid="uid://level_03"]
+[gd_scene load_steps=14 format=3 uid="uid://b2cogww4ju5w2"]
 
 [ext_resource type="PackedScene" uid="uid://ixgfdkb6b0ln" path="res://scenes/player/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" uid="uid://b7wohvpvp310i" path="res://scenes/entities/NoiseBlock.tscn" id="2_noise"]
-[ext_resource type="PackedScene" uid="uid://falling_platform" path="res://scenes/entities/FallingPlatform.tscn" id="3_fall"]
-[ext_resource type="PackedScene" uid="uid://moving_platform" path="res://scenes/entities/MovingPlatform.tscn" id="4_move"]
+[ext_resource type="PackedScene" path="res://scenes/entities/FallingPlatform.tscn" id="3_fall"]
 [ext_resource type="Script" uid="uid://coand336kmiha" path="res://scripts/levels/exit.gd" id="5_exit"]
-[ext_resource type="Script" path="res://scripts/levels/kill_zone.gd" id="6_killzone"]
-[ext_resource type="PackedScene" uid="uid://level_04" path="res://scenes/levels/Level_04.tscn" id="7_next"]
+[ext_resource type="Script" uid="uid://cw5hjcvvusic6" path="res://scripts/levels/kill_zone.gd" id="6_killzone"]
+[ext_resource type="PackedScene" path="res://scenes/levels/Level_04.tscn" id="7_next"]
+[ext_resource type="PackedScene" path="res://scenes/entities/ChasingHazard.tscn" id="8_chaser"]
+[ext_resource type="PackedScene" path="res://scenes/entities/StaticSpitter.tscn" id="9_spitter"]
+[ext_resource type="PackedScene" path="res://scenes/entities/Step4_Move.tscn" id="10_step4"]
+[ext_resource type="PackedScene" path="res://scenes/entities/Step6_Move.tscn" id="11_step6"]
 
 [sub_resource type="RectangleShape2D" id="shape_floor"]
 size = Vector2(900, 60)
 
 [sub_resource type="RectangleShape2D" id="shape_kill"]
-size = Vector2(2000, 40)
+size = Vector2(2978, 40)
 
 [sub_resource type="RectangleShape2D" id="shape_exit"]
 size = Vector2(120, 200)
@@ -44,25 +47,18 @@ fall_delay = 1.5
 
 [node name="Step2" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
 position = Vector2(520, 520)
-fall_delay = 1.2
 
 [node name="Step3" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
 position = Vector2(700, 460)
 fall_delay = 1.0
 
-[node name="Step4_Move" parent="Geometry/Platforms" instance=ExtResource("4_move")]
-position = Vector2(900, 400)
-amplitude = Vector2(0, -80)
-speed = 120.0
+[node name="platform_move_vertical" parent="Geometry/Platforms" instance=ExtResource("10_step4")]
 
 [node name="Step5" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
 position = Vector2(1100, 340)
 fall_delay = 0.9
 
-[node name="Step6_Move" parent="Geometry/Platforms" instance=ExtResource("4_move")]
-position = Vector2(1300, 280)
-amplitude = Vector2(120, 0)
-speed = 100.0
+[node name="platform_move_horizontal" parent="Geometry/Platforms" instance=ExtResource("11_step6")]
 
 [node name="Step7" parent="Geometry/Platforms" instance=ExtResource("3_fall")]
 position = Vector2(1500, 220)
@@ -78,13 +74,26 @@ feedback_required = 35.0
 position = Vector2(1000, 500)
 feedback_required = 25.0
 
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Chaser" parent="Enemies" instance=ExtResource("8_chaser")]
+position = Vector2(900, 640)
+patrol_distance = 160.0
+patrol_speed = 90.0
+chase_speed = 150.0
+
+[node name="StaticSpitter" parent="Enemies" instance=ExtResource("9_spitter")]
+position = Vector2(1400, 160)
+fire_interval = 1.4
+projectile_speed = 240.0
+
 [node name="KillZone" type="Area2D" parent="."]
 position = Vector2(0, 820)
-script = ExtResource("6_killzone")
 collision_layer = 0
-collision_mask = 1
+script = ExtResource("6_killzone")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+position = Vector2(489, 0)
 shape = SubResource("shape_kill")
 
 [node name="Exit" type="Area2D" parent="."]

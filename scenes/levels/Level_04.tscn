@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://level_04"]
+[gd_scene load_steps=10 format=3 uid="uid://level_04"]
 
 [ext_resource type="PackedScene" uid="uid://ixgfdkb6b0ln" path="res://scenes/player/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" uid="uid://b7wohvpvp310i" path="res://scenes/entities/NoiseBlock.tscn" id="2_noise"]
 [ext_resource type="PackedScene" uid="uid://moving_platform" path="res://scenes/entities/MovingPlatform.tscn" id="3_move"]
 [ext_resource type="Script" uid="uid://coand336kmiha" path="res://scripts/levels/exit.gd" id="4_exit"]
 [ext_resource type="Script" path="res://scripts/levels/kill_zone.gd" id="5_killzone"]
+[ext_resource type="PackedScene" uid="uid://chasing_hazard" path="res://scenes/entities/ChasingHazard.tscn" id="6_chaser"]
+[ext_resource type="PackedScene" uid="uid://static_spitter" path="res://scenes/entities/StaticSpitter.tscn" id="7_spitter"]
 
 [sub_resource type="RectangleShape2D" id="shape_floor"]
 size = Vector2(1200, 60)
@@ -70,6 +72,21 @@ feedback_required = 30.0
 [node name="NoiseBlock_Right" parent="NoiseBlocks" instance=ExtResource("2_noise")]
 position = Vector2(1700, 360)
 feedback_required = 35.0
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Chaser_Right" parent="Enemies" instance=ExtResource("6_chaser")]
+position = Vector2(1100, 520)
+patrol_distance = 200.0
+patrol_speed = 100.0
+chase_speed = 160.0
+
+[node name="StaticSpitter_Exit" parent="Enemies" instance=ExtResource("7_spitter")]
+position = Vector2(1800, 300)
+projectile_speed = 250.0
+fire_interval = 1.2
+aim_at_player = false
+fixed_direction = Vector2(-1, 0)
 
 [node name="KillZone" type="Area2D" parent="."]
 position = Vector2(0, 840)

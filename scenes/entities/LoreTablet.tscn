@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://lore_tablet"]
+[gd_scene load_steps=3 format=3 uid="uid://dpt7aj5qj3gx1"]
 
-[ext_resource type="Script" path="res://scripts/entities/LoreTablet.gd" id="1_lore"]
+[ext_resource type="Script" uid="uid://boxud8sgt0c3p" path="res://scripts/entities/LoreTablet.gd" id="1_lore"]
 
 [sub_resource type="RectangleShape2D" id="TabletShape"]
 size = Vector2(80, 100)
@@ -9,6 +9,7 @@ size = Vector2(80, 100)
 script = ExtResource("1_lore")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+z_index = -10
 shape = SubResource("TabletShape")
 
 [node name="Visual" type="Polygon2D" parent="."]
@@ -18,9 +19,9 @@ polygon = PackedVector2Array(-40, -50, 40, -50, 40, 50, -40, 50)
 [node name="VisualOutline" type="Polygon2D" parent="."]
 color = Color(0.4, 0.3, 0.2, 1)
 polygon = PackedVector2Array(-40, -50, 40, -50, 40, 50, -40, 50)
-width = 2.0
 
 [node name="Prompt" type="Label" parent="."]
+visible = false
 offset_left = -60.0
 offset_top = -70.0
 offset_right = 60.0
@@ -28,5 +29,3 @@ offset_bottom = -50.0
 text = "[E] Leggi"
 horizontal_alignment = 1
 vertical_alignment = 1
-visible = false
-

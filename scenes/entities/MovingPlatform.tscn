@@ -13,6 +13,14 @@ collision_mask = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("shape_platform")
 
+[node name="CarryArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CarryArea"]
+shape = SubResource("shape_platform")
+
 [node name="Visual" type="Polygon2D" parent="."]
 color = Color(0.7, 0.9, 1, 1)
 polygon = PackedVector2Array(-60, -10, 60, -10, 60, 10, -60, 10)

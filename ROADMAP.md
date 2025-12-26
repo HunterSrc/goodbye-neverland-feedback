@@ -18,7 +18,7 @@
 * [X] Aggiungi hitstop micro (0.04–0.06s) su colpo riuscito
 * [X] Aggiungi i-frames (invulnerabilità breve) dopo danno (0.5s)
 * [X] Aggiungi HP Player (es. 3) + morte (respawn)
-* [ ] Aggiungi knockback semplice quando prendi danno
+* [X] Aggiungi knockback semplice quando prendi danno
 * [ ] Aggiungi animazioni placeholder Player (idle/run/jump/dash/attack/hurt)
 
 ---
@@ -46,9 +46,9 @@
 ## EPIC 4 — HUD & UI
 
 * [ ] Feedback Bar visibile e chiara (animazione smooth + flash quando aumenta)
-* [ ] HP UI (3 cuori o barra minima)
-* [ ] Prompt interazione (“E” / “Interagisci”) per lore tablets
-* [ ] Transizione scene (fade in/out 0.3s) + “Level Title” breve
+* [X] HP UI (3 cuori o barra minima)
+* [X] Prompt interazione (“E” / “Interagisci”) per lore tablets
+* [X] Transizione scene (fade in/out 0.3s) + “Level Title” breve
 
 ---
 

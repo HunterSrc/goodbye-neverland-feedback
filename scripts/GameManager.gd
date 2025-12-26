@@ -13,6 +13,14 @@ extends Node
 @export var screenshake_duration: float = 0.08
 @export var screenshake_strength: float = 6.0
 
+# Screen flash (visual feedback)
+@export var flash_on_hit: bool = true
+@export var flash_on_damage: bool = true
+@export var flash_duration_hit: float = 0.08
+@export var flash_duration_damage: float = 0.12
+@export var flash_color_hit: Color = Color(1, 1, 1, 0.50)
+@export var flash_color_damage: Color = Color(1, 0.35, 0.35, 0.55)
+
 # Audio
 @export var beat_stream: AudioStream
 @export var hit_on_beat_stream: AudioStream
@@ -52,6 +60,7 @@ func _ready() -> void:
 	_player_hit = _make_player(hit_on_beat_stream)
 	_player_miss = _make_player(miss_stream)
 	_player_damage = _make_player(damage_stream)
+	
 
 
 func _make_player(stream: AudioStream) -> AudioStreamPlayer:
@@ -80,6 +89,7 @@ func load_level(level_scene: PackedScene, use_fade: bool = fade_on_level_load, s
 		push_error("[GM] load_level: scena null")
 		return
 
+	_force_time_scale_normal()
 	_reset_noise_counters()
 
 	var main := get_tree().current_scene
@@ -99,7 +109,7 @@ func load_level(level_scene: PackedScene, use_fade: bool = fade_on_level_load, s
 func reload_level(use_fade: bool = fade_on_reload, show_title: bool = show_title_on_reload) -> void:
 	"""Ricarica il livello corrente. Wrapper per Main.reload_current_level()."""
 	# Reset time_scale immediatamente (importante se la morte avviene durante hitstop)
-	Engine.time_scale = 1.0
+	_force_time_scale_normal()
 	_reset_noise_counters()
 
 	var main := get_tree().current_scene
@@ -140,6 +150,24 @@ func screenshake(duration: float = -1.0, strength: float = -1.0) -> void:
 	var main := get_tree().current_scene
 	if main and main.has_method("shake"):
 		main.shake(d0, s0)
+
+
+func flash_hit() -> void:
+	if not flash_on_hit:
+		return
+	_flash(flash_color_hit, flash_duration_hit)
+
+
+func flash_damage() -> void:
+	if not flash_on_damage:
+		return
+	_flash(flash_color_damage, flash_duration_damage)
+
+
+func _flash(c: Color, duration: float) -> void:
+	var main := get_tree().current_scene
+	if main and main.has_method("flash"):
+		main.flash(c, duration)
 
 
 # Audio helpers (placeholder per quando avremo file audio)
@@ -186,5 +214,20 @@ func get_noise_progress() -> Dictionary:
 	}
 
 
+func scan_noise_blocks() -> void:
+	noise_total = get_tree().get_nodes_in_group("noise_block").size()
+	noise_destroyed = 0
+	print("[GM] Noise scan: %d total" % noise_total)
+
+
+func scan_noise_blocks_deferred() -> void:
+	call_deferred("scan_noise_blocks")
+
+
 func all_noise_cleared() -> bool:
 	return noise_total > 0 and noise_destroyed >= noise_total
+
+
+func _force_time_scale_normal() -> void:
+	Engine.time_scale = 1.0
+	_hitstop_active = false

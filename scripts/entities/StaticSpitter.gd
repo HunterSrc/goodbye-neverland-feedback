@@ -7,6 +7,8 @@ extends Node2D
 @export var fixed_direction: Vector2 = Vector2.RIGHT
 @export var fire_directions: Array[Vector2] = []
 @export var damage: int = 1
+@export var projectile_lifetime: float = 3.0
+@export_range(0, 16, 1) var projectile_pool_size: int = 6
 @export var muzzle_flash_time: float = 0.12
 @export var muzzle_flash_scale: float = 1.4
 @export var debug_enabled: bool = false
@@ -20,6 +22,7 @@ extends Node2D
 var _player: Node2D
 var _timer: Timer
 var hits_remaining: int = 1
+var _projectile_pool: Array[Area2D] = []
 
 
 func d(msg: String) -> void:
@@ -43,6 +46,8 @@ func _ready() -> void:
 
 	if hit_area:
 		hit_area.area_entered.connect(_on_hit_area_area_entered)
+
+	_prewarm_pool()
 
 
 func _physics_process(_delta: float) -> void:
@@ -72,15 +77,20 @@ func _on_fire() -> void:
 		dirs.append(fixed_direction.normalized())
 
 	for dir in dirs:
-		var proj := projectile_scene.instantiate()
-		if proj and proj.has_method("setup"):
-			proj.setup(dir, projectile_speed, damage)
+		var proj: Area2D = _get_projectile()
+		if proj.get_parent() != get_tree().current_scene:
+			if proj.get_parent():
+				proj.get_parent().remove_child(proj)
+			get_tree().current_scene.add_child(proj)
 		if proj is Node2D:
 			var spawn_pos := global_position
 			if muzzle:
 				spawn_pos = muzzle.global_position
 			(proj as Node2D).global_position = spawn_pos
-		get_tree().current_scene.add_child(proj)
+		if proj and proj.has_method("setup"):
+			proj.setup(dir, projectile_speed, damage, projectile_lifetime)
+		if proj and proj.has_method("activate"):
+			proj.activate()
 		d("Fire dir=%s speed=%.1f" % [str(dir), projectile_speed])
 
 	_flash_muzzle()
@@ -98,6 +108,49 @@ func _on_hit_area_area_entered(area: Area2D) -> void:
 	GameManager.screenshake(0.08, 4.0)
 	if hits_remaining <= 0:
 		queue_free()
+
+
+func _prewarm_pool() -> void:
+	for i in range(projectile_pool_size):
+		_projectile_pool.append(_create_projectile())
+
+
+func _create_projectile() -> Area2D:
+	var proj := projectile_scene.instantiate()
+	if proj and proj.has_signal("returned") and not proj.returned.is_connected(_on_projectile_returned):
+		proj.returned.connect(_on_projectile_returned)
+	add_child(proj)
+	return proj as Area2D
+
+
+func _get_projectile() -> Area2D:
+	if _projectile_pool.size() > 0:
+		return _projectile_pool.pop_back()
+	return _create_projectile()
+
+
+func _on_projectile_returned(proj: Area2D) -> void:
+	if not is_instance_valid(proj):
+		return
+	if proj.monitoring:
+		proj.set_deferred("monitoring", false)
+	call_deferred("_park_projectile", proj)
+
+
+func _park_projectile(proj: Area2D) -> void:
+	if not is_instance_valid(proj):
+		return
+	if proj.monitoring:
+		# Se è ancora in monitoring, riprova nel prossimo frame
+		proj.set_deferred("monitoring", false)
+		call_deferred("_park_projectile", proj)
+		return
+	if proj.get_parent() != self:
+		if proj.get_parent():
+			proj.get_parent().remove_child(proj)
+		add_child(proj)
+	if _projectile_pool.size() < projectile_pool_size:
+		_projectile_pool.append(proj)
 
 func _flash_muzzle() -> void:
 	if muzzle_flash == null:

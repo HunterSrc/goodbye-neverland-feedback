@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://step6_move"]
+
+[ext_resource type="PackedScene" uid="uid://moving_platform" path="res://scenes/entities/MovingPlatform.tscn" id="1_move"]
+
+[node name="platform_move_horizontal" instance=ExtResource("1_move")]
+position = Vector2(1300, 280)
+amplitude = Vector2(120, 0)
+speed = 100.0
